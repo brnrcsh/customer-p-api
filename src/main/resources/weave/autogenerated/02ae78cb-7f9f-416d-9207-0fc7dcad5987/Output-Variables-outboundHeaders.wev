@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_02ae78cb_7f9f_416d_9207_0fc7dcad5987_Output_Variables_outboundHeaders = {|
+  "x-ratelimit-remaining": String, 
+  "x-ratelimit-limit": String, 
+  "x-ratelimit-reset": String
+|}
+

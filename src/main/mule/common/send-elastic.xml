@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="send-elastic" doc:id="02ae78cb-7f9f-416d-9207-0fc7dcad5987" >
+		<try doc:name="Try" doc:id="0ccad641-880d-415b-8557-ac89bc248ad0" >
+			<http:request method="${elasticsearch.method}" doc:name="SEND EVENT to ELASTIC" doc:id="406f5bb7-1113-45b8-80b6-6d8723f8be17" config-ref="ElasticSearch_HTTP-Req-conf" path="/${elasticsearch.basePath}" target="responseELK">
+				<http:body ><![CDATA[#[${file::dwl/commons/request-to-elk.dwl}]]]></http:body>
+			</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="879758a5-74a9-4b72-8685-f68d6feb6136" >
+					<logger level="ERROR" doc:name="Logger Erro - Elastic" doc:id="8f14e481-2b82-4415-a239-2310ca28e084" message="Erro no elasticseach"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

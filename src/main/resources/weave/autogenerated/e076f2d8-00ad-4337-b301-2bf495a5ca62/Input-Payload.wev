@@ -1,0 +1,18 @@
+%dw 2.0
+
+type auto_e076f2d8_00ad_4337_b301_2bf495a5ca62_Input_Payload = {
+  birthday: String, 
+  address: {
+    line02?: String, 
+    line01: String, 
+    city: String, 
+    neighborhood: String, 
+    _?: Any
+  }, 
+  bonus: Number, 
+  document: String, 
+  name: String, 
+  id?: String, 
+  _?: Any
+}
+

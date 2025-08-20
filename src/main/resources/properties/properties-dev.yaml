@@ -1,0 +1,18 @@
+http:
+  port: "8081"
+
+elasticsearch:
+  index: "customer-events"
+  apiKey: "ApiKey WWRkeHZwZ0JFWGFVUk56Yi1ieFM6T2dxRXkzeFhDUDVIQktTWDB3eDI3dw=="
+  host: "20.84.120.171"
+  port: "9200"
+  protocol: "HTTP"
+  method: "POST"
+  basePath: "_doc"
+  
+kafka:
+  bootstrap:
+    server: "20.84.120.171:29092"
+  topics:
+    customer: "bruno-customer-topic"
+ 

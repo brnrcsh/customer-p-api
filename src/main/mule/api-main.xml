@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing"
+	xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd
+http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
+	<flow name="customer-p-api-main">
+		<http:listener
+			config-ref="customer-p-api-httpListenerConfig"
+			path="/v1/*">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:error-response>
+		</http:listener>
+		<set-variable value='#[attributes.headers."x-correlation-id"]' doc:name="x-correlation-id" doc:id="3af13298-f974-4aab-bedd-f5eef251802c" variableName="x-correlation-id"/>
+		<set-variable doc:name="headersKafka" doc:id="7a12e5b3-aead-4c9c-8f58-92392aaea2da" variableName="headersKafka" value="#[${file::dwl/commons/headers-kafka.dwl}]"/>
+		<tracing:set-logging-variable doc:name="Set Trace Id"
+	        variableName="#['trace_id']"
+	        value="#[vars.OTEL_TRACE_CONTEXT.traceId]"/>
+	    <tracing:set-logging-variable doc:name="Set Span Id"
+	        variableName="#['span_id']"
+	        value="#[vars.OTEL_TRACE_CONTEXT.spanId default '']" />
+		<logger level="INFO" doc:name="Logger de Inicio de Execução" doc:id="6767ab6a-27c3-45a7-802c-2da46516d235" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{ &#10;	"payload": payload,&#10;	"correlation-id": vars."x-correlation-id"&#10;}]' />
+		<apikit:router config-ref="customer-p-api-config" />
+		<error-handler ref="API-KIT_Error-Handler" />
+	</flow>
+	
+	<flow name="customer-p-api-console">
+		<http:listener
+			config-ref="customer-p-api-httpListenerConfig"
+			path="/console/*">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:body>#[payload]</http:body>
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:console config-ref="customer-p-api-config" />
+		<error-handler ref="Console_Error-Handler" />
+	</flow>
+	<flow name="get:\customers:customer-p-api-config" doc:id="c8af9a7f-b5f0-43c5-ac1e-75cc19cadb55" >
+		<logger level="INFO" doc:name="Logger" doc:id="15306c95-e73e-4e2c-9719-2b6ee521bb99" />
+	</flow>
+</mule>

@@ -1,0 +1,9 @@
+http:
+  host: "0.0.0.0"
+  protocol: "HTTP"
+  timeout:
+    connection: "40000"
+    read: "30000"
+    
+    
+    

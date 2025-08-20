@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka"
+	xmlns:opentelemetry="http://www.mulesoft.org/schema/mule/opentelemetry"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/opentelemetry http://www.mulesoft.org/schema/mule/opentelemetry/current/mule-opentelemetry.xsd
+http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd">
+	
+	<http:listener-config name="customer-p-api-httpListenerConfig">
+		<http:listener-connection
+			host="${http.host}"
+			port="${http.port}" readTimeout="${http.timeout.read}" connectionIdleTimeout="${http.timeout.connection}"/>
+	</http:listener-config>
+	
+	<apikit:config
+		name="customer-p-api-config"
+		api="resource::fd910f05-df24-42bd-b701-691e4d055415:customer-p-api:1.0.1:raml:zip:customer-p-api.raml"
+		outboundHeadersMapName="outboundHeaders"
+		httpStatusVarName="httpStatus" />
+	<configuration-properties doc:name="Configuration properties" doc:id="026b4483-2e8d-4ea0-969e-c17b8e1bf08b" file="properties/properties.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="cc68740a-232c-4e8c-9262-b24a44751ce7" file="properties/properties-${mule.env}.yaml" />
+	<global-property doc:name="Global Property" doc:id="29001f55-44ea-4d79-8a08-75940d68828f" name="mule.env" value="dev" />
+	
+	<http:request-config name="ElasticSearch_HTTP-Req-conf" doc:name="HTTP Request configuration" doc:id="24276fa7-f95e-4fad-b666-75d886bc9e6d" basePath="/${elasticsearch.index}">
+		<http:request-connection host="${elasticsearch.host}" port="${elasticsearch.port}" >
+			<reconnection >
+				<reconnect frequency="3000" count="5" />
+			</reconnection>
+		</http:request-connection>
+		<http:default-headers >
+			<http:default-header key="Authorization" value="${elasticsearch.apiKey}" />
+		</http:default-headers>
+	</http:request-config>
+	
+	<opentelemetry:config name="default_OpenTelemetry-Config" doc:name="OpenTelemetry Config" doc:id="53894f66-e8ec-4e6a-a25e-3a3b637279cc" serviceName="bruno-customer-p-api" spanAllProcessors="true" >
+		<opentelemetry:resource-attributes >
+			<opentelemetry:attribute key="deployment.environment" value="dev" />
+		</opentelemetry:resource-attributes>
+		<opentelemetry:exporter >
+			<opentelemetry:otlp-exporter collectorEndpoint="http://20.84.120.171:5602" requestCompression="GZIP"/>
+		</opentelemetry:exporter>
+	</opentelemetry:config>
+	
+</mule>
