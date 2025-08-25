@@ -82,6 +82,24 @@
 			<version>4.10.2</version>
 			<classifier>mule-plugin</classifier>
 		</dependency> -->
+		<dependency>
+			<groupId>com.mulesoft.connectors</groupId>
+			<artifactId>mule-kafka-connector</artifactId>
+			<version>4.10.2</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-validation-module</artifactId>
+			<version>2.0.6</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>fd910f05-df24-42bd-b701-691e4d055415</groupId>
+			<artifactId>mule-plugin-salesforce-s-api</artifactId>
+			<version>1.0.0</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
 	</dependencies>
 
 	<repositories>

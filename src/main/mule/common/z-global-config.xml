@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka"
-	xmlns:opentelemetry="http://www.mulesoft.org/schema/mule/opentelemetry"
-	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+<mule xmlns:salesforce-system-api="http://www.mulesoft.org/schema/mule/salesforce-system-api"
+	xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka"
+	xmlns:opentelemetry="http://www.mulesoft.org/schema/mule/opentelemetry" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/opentelemetry http://www.mulesoft.org/schema/mule/opentelemetry/current/mule-opentelemetry.xsd
-http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd">
+http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd
+http://www.mulesoft.org/schema/mule/salesforce-system-api http://www.mulesoft.org/schema/mule/salesforce-system-api/current/mule-salesforce-system-api.xsd">
 	
 	<http:listener-config name="customer-p-api-httpListenerConfig">
 		<http:listener-connection
@@ -44,5 +45,16 @@ http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/ka
 			<opentelemetry:otlp-exporter collectorEndpoint="http://20.84.120.171:5602" requestCompression="GZIP"/>
 		</opentelemetry:exporter>
 	</opentelemetry:config>
+	<kafka:consumer-config name="Apache_Kafka_Consumer_configuration" doc:name="Apache Kafka Consumer configuration" doc:id="4b3ffa40-00e8-4df5-b5fb-1890bc62929a" >
+		<kafka:consumer-plaintext-connection groupId="${kafka.groupId}" autoOffsetReset="EARLIEST">
+			<kafka:bootstrap-servers >
+				<kafka:bootstrap-server value="${kafka.bootstrap.server}" />
+			</kafka:bootstrap-servers>
+			<kafka:topic-patterns >
+				<kafka:topic-pattern value="${kafka.topics.customer}" />
+			</kafka:topic-patterns>
+		</kafka:consumer-plaintext-connection>
+	</kafka:consumer-config>
+	<salesforce-system-api:config name="Salesforce___System___API_Config" doc:name="Salesforce - System - API Config" doc:id="6cfc3a49-41a5-4b14-80bf-be1604d38b69" property_host="${mule-salesforce-s-api.host}" property_port="${mule-salesforce-s-api.port}" property_basePath="${mule-salesforce-s-api.basePath}" property_protocol="${mule-salesforce-s-api.protocol}" property_responseTimeout="${mule-salesforce-s-api.timeout}" property_client-id="${mule-salesforce-s-api.client_id}" property_client-secret="${mule-salesforce-s-api.client_secret}" />
 	
 </mule>

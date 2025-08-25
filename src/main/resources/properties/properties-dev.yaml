@@ -15,4 +15,13 @@ kafka:
     server: "20.84.120.171:29092"
   topics:
     customer: "bruno-customer-topic"
- 
+  groupId: "bruno-customer-e-api"
+
+mule-salesforce-s-api:
+  port: "8083"
+  host: "localhost"
+  client_id: "asdfasfasdfsafas"
+  client_secret: "asdfsdafsadfsadfasdfa"
+  timeout: "30000"
+  basePath: "/v1/customers"
+  protocol: "HTTP"

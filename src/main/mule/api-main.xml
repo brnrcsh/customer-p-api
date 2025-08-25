@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
 	xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing"
 	xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka"
 	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
 http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd
-http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
+http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="5cf969b3-2a04-405e-93d0-74bd9c250348" />
 	<flow name="customer-p-api-main">
 		<http:listener
 			config-ref="customer-p-api-httpListenerConfig"
@@ -52,5 +54,21 @@ http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/
 	</flow>
 	<flow name="get:\customers:customer-p-api-config" doc:id="c8af9a7f-b5f0-43c5-ac1e-75cc19cadb55" >
 		<logger level="INFO" doc:name="Logger" doc:id="15306c95-e73e-4e2c-9719-2b6ee521bb99" />
+	</flow>
+	<flow name="subscriber-customer-events" doc:id="15b28999-ed58-44b1-87e5-6f0fd0394ec9" >
+		<kafka:message-listener doc:name="Message listener - Customers" doc:id="850724d5-ad31-41d7-a7fe-a6ee51d64c80" config-ref="Apache_Kafka_Consumer_configuration"/>
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;attributes.headers]" doc:name="Headers" doc:id="4da4298d-740b-4ca6-9d11-04e40e7fd2bc" variableName="kafkaHeaders"/>
+		<set-variable value='#[%dw 2.0&#10;output application/json&#10;---&#10;read(payload, "application/json")]' doc:name="Body" doc:id="bec7dfab-7f8b-4114-a6db-960c9cbbc4ad" variableName="kafkaBody"/>
+		<validation:is-not-null doc:name="Is not null" doc:id="924dce35-59c4-4a9a-afe8-7f6cebe93a84" config-ref="Validation_Config" value="#[vars.kafkaHeaders.method]" message="O Header Method é NULL"/>
+		<flow-ref doc:name="customer-event-process_Sub-Flow" doc:id="8f012d99-17bf-4927-9a16-ec10a952d2a4" name="customer-event-process_Sub-Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="74803c78-d958-4b14-ac21-2f45b8c50324" message="#[payload]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7404ec7f-cfa7-4dd1-b52f-8cad78d9a63b" type="VALIDATION:NULL">
+				<logger level="ERROR" doc:name="errorMessage" doc:id="4060ea81-d32e-44c8-86b3-5e1c301a00b6" message="#[error.errorMessage]" />
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="52c370d1-d926-4cf1-97fb-ff86762800b3" type="RULE:METHOD_INVALID">
+				<logger level="ERROR" doc:name="errorMessage" doc:id="dba55a89-159f-431b-bf5d-95687b5f75e7" message="#[error.errorMessage]" />
+			</on-error-propagate>
+		</error-handler>
 	</flow>
 </mule>
