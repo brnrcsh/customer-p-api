@@ -28,6 +28,9 @@
 				<artifactId>mule-maven-plugin</artifactId>
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
+				<configuration>
+					<classifier>mule-application</classifier>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -48,7 +51,7 @@
 		<dependency>
 			<groupId>fd910f05-df24-42bd-b701-691e4d055415</groupId>
 			<artifactId>customer-p-api</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>
@@ -97,7 +100,7 @@
 		<dependency>
 			<groupId>fd910f05-df24-42bd-b701-691e4d055415</groupId>
 			<artifactId>mule-plugin-salesforce-s-api</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>

@@ -12,7 +12,7 @@ http://www.mulesoft.org/schema/mule/salesforce-system-api http://www.mulesoft.or
 			<when expression='#[upper(vars.kafkaHeaders.method) == "DELETE"]'>
 				<flow-ref doc:name="DELETE" doc:id="dc7caf56-d4e5-4cd6-be30-6c751b7a31dd" name="customer-event-process-delete_Sub-Flow" />
 			</when>
-			<when expression='#[upper(vars.kafkaHeaders.method) == "GET"]'>
+			<when expression='#[upper(vars.kafkaHeaders.method) == "PUT"]'>
 				<flow-ref doc:name="PUT" doc:id="ccec4c42-251a-45e7-a7fe-66c2547d8797" name="customer-event-process-put_Sub-Flow" />
 			</when>
 			<otherwise>
@@ -28,11 +28,11 @@ http://www.mulesoft.org/schema/mule/salesforce-system-api http://www.mulesoft.or
 	</sub-flow>
 	<sub-flow name="customer-event-process-delete_Sub-Flow" doc:id="58911bc9-1d86-4b81-b90e-51bc40378607" >
 		<logger level="INFO" doc:name="Logger" doc:id="5451febc-5961-48ad-b9e8-908653953c23" />
-		<salesforce-system-api:delete-customer-by-id doc:name="Delete customer by id" doc:id="030512cc-e2d3-4365-a29b-c5be56379f9b" config-ref="Salesforce___System___API_Config" id="#[vars.kafkaHeaders.id]" x-correlation-id="#[vars.correlationId]"/>
+		<salesforce-system-api:delete-customer-by-id doc:name="Delete customer by id" doc:id="030512cc-e2d3-4365-a29b-c5be56379f9b" config-ref="Salesforce___System___API_Config" id="#[vars.kafkaBody.id]" x-correlation-id="#[vars.correlationId]"/>
 	</sub-flow>
 	<sub-flow name="customer-event-process-put_Sub-Flow" doc:id="e0f0492f-962a-4485-ba28-0e7721f4cb39" >
 		<logger level="INFO" doc:name="Logger" doc:id="79c52330-de4a-4235-92b3-134cfd5e4dcf" />
-		<salesforce-system-api:update-customer-by-id doc:name="Update customer by id" doc:id="6721ab82-2ec1-46c1-87e6-1e66dcd39987" config-ref="Salesforce___System___API_Config" id="#[vars.kafkaHeaders.id]" x-correlation-id="#[vars.correlationId]">
+		<salesforce-system-api:update-customer-by-id doc:name="Update customer by id" doc:id="6721ab82-2ec1-46c1-87e6-1e66dcd39987" config-ref="Salesforce___System___API_Config" id="#[vars.kafkaBody.id]" x-correlation-id="#[vars.correlationId]">
 			<salesforce-system-api:update-customer-by-id-request-data ><![CDATA[#[vars.kafkaBody]]]></salesforce-system-api:update-customer-by-id-request-data>
 		</salesforce-system-api:update-customer-by-id>
 	</sub-flow>

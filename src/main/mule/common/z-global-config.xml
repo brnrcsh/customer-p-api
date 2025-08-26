@@ -19,7 +19,7 @@ http://www.mulesoft.org/schema/mule/salesforce-system-api http://www.mulesoft.or
 	
 	<apikit:config
 		name="customer-p-api-config"
-		api="resource::fd910f05-df24-42bd-b701-691e4d055415:customer-p-api:1.0.1:raml:zip:customer-p-api.raml"
+		api="resource::fd910f05-df24-42bd-b701-691e4d055415:customer-p-api:1.0.2:raml:zip:customer-p-api.raml"
 		outboundHeadersMapName="outboundHeaders"
 		httpStatusVarName="httpStatus" />
 	<configuration-properties doc:name="Configuration properties" doc:id="026b4483-2e8d-4ea0-969e-c17b8e1bf08b" file="properties/properties.yaml" />
